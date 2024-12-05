@@ -1,0 +1,130 @@
+@startuml
+!pragma layout smetana
+
+class Main{
++ static void main(String[] args)
+}
+
+
+class Game{
++ void startGame()
++ void endGame()
++ void loadSavedGame()
++ void saveGame()
++ void createNewSave()
+}
+class Player{
+- String name
+- int health
+- int gold;
+- List<Weapon> weapons;
+- List<Armor> armors;
+- List<Loot> inventory;
++ Player(String name,int health,int gold)
++ void decreaseHealth(int amount)
++ void increaseHealth(int amount)
++ void addToInventory()
++ void equipWeapon()
++ void equipArmor()
++ String toString()
++ String getName()
++ int getHealth()
++ int getGold()
+}
+
+class Path{
++ void displayOptions()
++ String choosePath(String input)
++ void triggerEvent(String path)
+}
+
+class Store{
++ void displayItems()
++ void buyItem()
++ void sellItem()
+}
+
+class Weapon{
+- String name
+- int damage
+- int durability
++ Weapon(String name, int damage, int durability)
++ String getName()
++ int getDurability()
++ int getDamage()
++ void decreaseDurability()
+}
+class Armor{
+- String name
+- int defense
+- int durability
++ Weapon(String name, int defense, int durability)
++ String getName()
++ int getDurability()
++ int getDefense()
++ void decreaseDurability()
+}
+
+ class Loot {
+- String name
+- String type
+- int value
++ Loot(String name, String type, int value)
++ String getName()
++ String getType()
++ int getValue()
+}
+
+abstract class NPC{
+-String name;
+-boolean isFriendly;
++ NPC(String name, boolean isFriendly)
++ String getName()
++ boolean isFriendly()
++ void interact()
+}
+class Enemy{
+- int damage;
++ Enemy(String name, int damage)
++ super(name, false);
++ int getDamage()
++ void attack()
+}
+class FriendlyNPC{
++ FriendlyNPC(String name)
++ super(name, true);
++ void offerHelp()
+}
+
+
+
+package "util"{
+
+class TextUI{
+- Scanner scan
+
++ void displayMSG(String msg)
++ String promptText (String msg)
++ int promptNumeric (String msg))
+}
+
+class FileIO{
++ ArrayList<String> readPlayerData(String path)
++ void saveData(List<String> items, String path, String header)
++ String[] readGameData(String path, int length)
+}
+
+Game *-- TextUI
+Main *-- Game
+Game *-- Player
+Game *-- FileIO
+Game *-- Path
+Path *-- NPC
+NPC <-- Enemy
+NPC <-- FriendlyNPC
+Path *-- Store
+Store *-- Loot
+Player *-- Loot
+Loot <-- Weapon
+Loot <-- Armor
+@enduml
