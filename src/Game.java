@@ -17,7 +17,7 @@ public class Game {
 
             switch (Choice) {
                 case "1":
-                    System.out.println("Starting New Game...");
+                    handleNewGame(scanner);
                     break;
                 case "2":
                     System.out.println("Loading Game...");
@@ -31,5 +31,34 @@ public class Game {
             System.out.println();
         }
         scanner.close();
+    }
+    private static void handleNewGame(Scanner scanner) {
+        while (true) {
+            System.out.println("=== Select a Save Slot===");
+            System.out.println("1. Save Slot 1");
+            System.out.println("2. Save Slot 2");
+            System.out.println("3. Save Slot 3");
+            System.out.println("4. Back to Main Menu");
+            System.out.println("Choose a Save Slot to continue!");
+
+            String slotChoice = scanner.nextLine();
+            switch (slotChoice) {
+                case "1":
+                    System.out.println("Save Slot 1 selected... starting New Game");
+                    return;
+                    case "2":
+                        System.out.println("Save Slot 2 selected... starting New Game");
+                        return;
+                        case "3":
+                            System.out.println("Save Slot 3 selected... starting New Game");
+                            return;
+                            case "4":
+                                System.out.println("Returning to Main Menu...");
+                                return;
+                                default:
+                                    System.out.println("Invalid Choice. Select an available option");
+            }
+            System.out.println();
+        }
     }
 }
