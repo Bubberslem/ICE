@@ -1,12 +1,21 @@
 import java.util.Scanner;
 
+
+
 public class Game {
-    public static void main(String[] args) {
+    private TextUI ui;
+    private String name;
+    public Game(String name) {
+        this.name = name;
+        this.ui = new TextUI();
+
+    }
+        public void menu() {
         Scanner scanner = new Scanner(System.in);
         boolean running = true;
 
         while (running) {
-            System.out.println("=== Welcome to Madseroth! ===");
+            ui.displayMsg("=== Welcome to Madseroth! ===");
             System.out.println("1. New Game");
             System.out.println("2. Load Game");
             System.out.println("3. Exit Game");
