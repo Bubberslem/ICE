@@ -8,6 +8,8 @@ public class Player {
     private List<Weapon> weapons;
     private List<Armor> armors;
     private List<Loot> inventory;
+    private Weapon equippedWeapon;
+    private Armor equippedArmor;
 
     public Player(String name, int gold, int health) {
         this.name = name;
@@ -16,7 +18,60 @@ public class Player {
         this.weapons = new ArrayList<>();
         this.armors = new ArrayList<>();
         this.inventory = new ArrayList<>();
+        this.equippedWeapon = null;
+        this.equippedArmor = null;
     }
+
+
+    public void loadPlayerData(String filePath) {
+        List<String> data = FileIO.readPlayerData(filePath);
+
+        if (!data.isEmpty()) {
+            String[] parts = data.get(0).split(","); // Assume first line contains player data
+            this.name = parts[0].trim();
+            this.gold = Integer.parseInt(parts[1].trim());
+            this.health = Integer.parseInt(parts[2].trim());
+        }
+    }
+
+    public void loadInventoryFromFile(String filePath) {
+        List<String> data = FileIO.readPlayerData(filePath);
+
+        for (String line : data) {
+            String[] parts = line.split(","); // Split the line into fields
+            String type = parts[0].trim();
+            String name = parts[1].trim();
+            int value = Integer.parseInt(parts[2].trim());
+            int stat1 = Integer.parseInt(parts[3].trim());
+            int stat2 = Integer.parseInt(parts[4].trim());
+
+            if (type.equalsIgnoreCase("Weapon")) {
+                weapons.add(new Weapon(name, value, stat1, stat2));
+            } else if (type.equalsIgnoreCase("Armor")) {
+                armors.add(new Armor(name, value, stat1, stat2));
+            }
+        }
+    }
+
+    public void equipWeapon(Weapon weapon) {
+        if (weapons.contains(weapon)) {
+            this.equippedWeapon = weapon;
+            System.out.println(weapon.getName() + " is now equipped.");
+        } else {
+            System.out.println("You don't have this weapon in your inventory.");
+        }
+    }
+
+    public void equipArmor(Armor armor) {
+        if (armors.contains(armor)) {
+            this.equippedArmor = armor;
+            System.out.println(armor.getName() + " is now equipped.");
+        } else {
+            System.out.println("You don't have this armor in your inventory.");
+        }
+    }
+
+
     public String getName() {
         return name;
     }
@@ -38,14 +93,6 @@ public class Player {
 
     public void addToInventory(Loot loot){
         inventory.add(loot);
-    }
-
-    public void equipWeapon(){
-
-    }
-
-    public void equipArmor(){
-
     }
 
     public void addWeapon(Weapon weapon) {
