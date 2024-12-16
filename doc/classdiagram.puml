@@ -58,7 +58,7 @@ class Armor{
 - String name
 - int defense
 - int durability
-+ Weapon(String name, int defense, int durability)
++ Armor(String name, int defense, int durability)
 + String getName()
 + int getDurability()
 + int getDefense()
