@@ -1,73 +1,127 @@
-import java.util.Scanner;
-
-
+import java.util.ArrayList;
+import java.util.List;
 
 public class Game {
     private TextUI ui;
     private String name;
+    private List<String> gameSlots;
+
     public Game(String name) {
         this.name = name;
         this.ui = new TextUI();
-
+        this.gameSlots = FileIO.readPlayerData("data/gameSlots.csv"); // Load game slots on startup
     }
-        public void menu() {
-        Scanner scanner = new Scanner(System.in);
+
+    public void menu() {
         boolean running = true;
 
         while (running) {
-            ui.displayMsg("=== Welcome to Madseroth! ===");
-            System.out.println("1. New Game");
-            System.out.println("2. Load Game");
-            System.out.println("3. Exit Game");
-            System.out.println("Please choose an option adventurer!: ");
+            ui.displayMsg("=== Welcome to " + name + "! ===");
+            ui.displayMsg("1. New Game");
+            ui.displayMsg("2. Load Game");
+            ui.displayMsg("3. Exit Game");
+            String choice = ui.promptText("Please choose an option, adventurer!: ");
 
-            String Choice = scanner.nextLine();
-
-
-            switch (Choice) {
+            switch (choice) {
                 case "1":
-                    handleNewGame(scanner);
+                    handleNewGame();
                     break;
                 case "2":
-                    System.out.println("Loading Game...");
+                    handleLoadGame();
                     break;
-                    case "3":
-                        System.out.println("Exit Game...");
-                        break;
-                        default:
-                            System.out.println("Invalid Choice. Select an available option");
+                case "3":
+                    System.out.println("Exiting Game...\nThanks for playing " + name + "!");
+                    running = false;
+                    break;
+                default:
+                    System.out.println("Invalid Choice. Select an available option");
             }
-            System.out.println();
         }
-        scanner.close();
     }
-    private static void handleNewGame(Scanner scanner) {
-        while (true) {
-            System.out.println("=== Select a Save Slot===");
-            System.out.println("1. Save Slot 1");
-            System.out.println("2. Save Slot 2");
-            System.out.println("3. Save Slot 3");
-            System.out.println("4. Back to Main Menu");
-            System.out.println("Choose a Save Slot to continue!");
 
-            String slotChoice = scanner.nextLine();
+    public void handleNewGame() {
+        while (true) {
+            ui.displayMsg("=== Select a Save Slot ===");
+            ui.displayMsg("1. Save Slot 1");
+            ui.displayMsg("2. Save Slot 2");
+            ui.displayMsg("3. Save Slot 3");
+            ui.displayMsg("4. Back to Main Menu");
+            String slotChoice = ui.promptText("Choose a Save Slot to continue!");
+
             switch (slotChoice) {
                 case "1":
-                    System.out.println("Save Slot 1 selected... starting New Game");
+                case "2":
+                case "3":
+                    ui.displayMsg("Save Slot " + slotChoice + " selected... starting New Game");
+                    createNewGameSlot(slotChoice);
                     return;
-                    case "2":
-                        System.out.println("Save Slot 2 selected... starting New Game");
-                        return;
-                        case "3":
-                            System.out.println("Save Slot 3 selected... starting New Game");
-                            return;
-                            case "4":
-                                System.out.println("Returning to Main Menu...");
-                                return;
-                                default:
-                                    System.out.println("Invalid Choice. Select an available option");
+                case "4":
+                    ui.displayMsg("Returning to Main Menu...");
+                    return;
+                default:
+                    ui.displayMsg("Invalid Choice. Select an available option");
             }
-            System.out.println();
         }
+    }
+
+    public void handleLoadGame() {
+
+        if (gameSlots.isEmpty()) {
+            ui.displayMsg("No save slots available. Start a new game first.");
+            return;
+        }
+
+        while (true) {
+            ui.displayMsg("=== Load Game ===");
+            for (int i = 0; i < gameSlots.size(); i++) {
+                ui.displayMsg((i + 1) + ". Slot " + (i + 1) + ": " + gameSlots.get(i));
+            }
+            ui.displayMsg((gameSlots.size() + 1) + ". Back to Main Menu");
+
+            String slotChoice = ui.promptText("Choose a Slot to continue!");
+            int slotIndex;
+
+            try {
+                slotIndex = Integer.parseInt(slotChoice) - 1;
+
+                if (slotIndex >= 0 && slotIndex < gameSlots.size()) {
+                    String filePath = gameSlots.get(slotIndex);
+                    Player player = loadPlayerFromFile(filePath);
+                    ui.displayMsg("Loaded player: " + player);
+                    return;
+                } else if (slotIndex == gameSlots.size()) {
+                    ui.displayMsg("Returning to Main Menu...");
+                    return;
+                } else {
+                    ui.displayMsg("Invalid Choice. Select an available option");
+                }
+            } catch (NumberFormatException e) {
+                ui.displayMsg("Invalid input. Please enter a number.");
+            }
+        }
+    }
+
+    private void createNewGameSlot(String slotChoice) {
+        // Create a new save slot file and add it to the list
+        String newSlotPath = "data/slot" + slotChoice + ".csv";
+        FileIO.saveData(new ArrayList<>(), newSlotPath, "type,name,value,stat1,stat2"); // Initialize empty save file
+        gameSlots.add(newSlotPath);
+
+        // Create a corresponding inventory file for the new slot
+        String newInventoryPath = "data/inventory" + slotChoice + ".csv";
+        FileIO.saveData(new ArrayList<>(), newInventoryPath, "type,name,value,stat1,stat2"); // Initialize empty inventory file
+
+        ui.displayMsg("New game slot created: " + newSlotPath);
+    }
+
+    private Player loadPlayerFromFile(String filePath) {
+        Player player = new Player("Adventurer", 100, 100); // Default stats
+        player.loadPlayerData(filePath); // Load player data (e.g., name, stats)
+
+        // Load the player's inventory from the corresponding inventory file
+        String inventoryFilePath = filePath.replace("slot", "inventory");
+        player.loadInventoryFromFile(inventoryFilePath); // Load inventory data
+
+        return player;
     }
 }
