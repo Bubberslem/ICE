@@ -61,4 +61,54 @@ public class FileIO {
         return data;
 
     }
+    public static List<Weapon> loadWeapons(String filePath) {
+        List<Weapon> weapons = new ArrayList<>();
+
+        try {
+            Scanner scanner = new Scanner(new File(filePath));
+            scanner.nextLine(); // Skip the header row
+
+            while (scanner.hasNextLine()) {
+                String[] parts = scanner.nextLine().split(",");
+                String name = parts[0].trim();
+                int value = Integer.parseInt(parts[1].trim());
+                int damage = Integer.parseInt(parts[2].trim());
+                int durability = Integer.parseInt(parts[3].trim());
+
+                weapons.add(new Weapon(name, value, damage, durability));
+            }
+            scanner.close();
+        } catch (FileNotFoundException e) {
+            System.out.println("Weapons file not found: " + filePath);
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid data format in weapons file.");
+        }
+
+        return weapons;
+    }
+    public static List<Armor> loadArmor(String filePath) {
+        List<Armor> armors = new ArrayList<>();
+
+        try {
+            Scanner scanner = new Scanner(new File(filePath));
+            scanner.nextLine(); // Skip the header row
+
+            while (scanner.hasNextLine()) {
+                String[] parts = scanner.nextLine().split(",");
+                String name = parts[0].trim();
+                int value = Integer.parseInt(parts[1].trim());
+                int defense = Integer.parseInt(parts[2].trim());
+                int durability = Integer.parseInt(parts[3].trim());
+
+                armors.add(new Armor(name, value, defense, durability));
+            }
+            scanner.close();
+        } catch (FileNotFoundException e) {
+            System.out.println("Armor file not found: " + filePath);
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid data format in armor file.");
+        }
+
+        return armors;
+    }
 }

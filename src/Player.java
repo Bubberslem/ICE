@@ -52,6 +52,16 @@ public class Player {
             }
         }
     }
+    public void displayInventory() {
+        System.out.println("=== Weapons ===");
+        for (Weapon weapon : weapons) {
+            System.out.println(weapon);
+        }
+        System.out.println("\n=== Armor ===");
+        for (Armor armor : armors) {
+            System.out.println(armor);
+        }
+    }
 
     public void equipWeapon(Weapon weapon) {
         if (weapons.contains(weapon)) {

@@ -1,3 +1,4 @@
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -5,11 +6,15 @@ public class Game {
     private TextUI ui;
     private String name;
     private List<String> gameSlots;
+    private List<Weapon> globalWeapons;
+    private List<Armor> globalArmors;
 
     public Game(String name) {
         this.name = name;
         this.ui = new TextUI();
         this.gameSlots = FileIO.readPlayerData("data/gameSlots.csv"); // Load game slots on startup
+        this.globalWeapons = FileIO.loadWeapons("data/weapons.csv");
+        this.globalArmors = FileIO.loadArmor("data/armors.csv");
     }
 
     public void menu() {
