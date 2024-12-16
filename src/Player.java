@@ -97,6 +97,13 @@ public class Player {
     public void decreaseHealth(int amount) {
         health -= amount;
     }
+    public void takeDamage(int damage) {
+        this.health -= damage;
+        if (this.health < 0) {
+            this.health = 0; // Prevent negative health
+        }
+        System.out.println(name + " took " + damage + " damage! Health now: " + health);
+    }
     public void increaseHealth(int amount) {
         health += amount;
     }
