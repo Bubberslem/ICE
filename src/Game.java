@@ -70,7 +70,6 @@ public class Game {
     }
 
     public void handleLoadGame() {
-
         if (gameSlots.isEmpty()) {
             ui.displayMsg("No save slots available. Start a new game first.");
             return;
@@ -93,6 +92,9 @@ public class Game {
                     String filePath = gameSlots.get(slotIndex);
                     Player player = loadPlayerFromFile(filePath);
                     ui.displayMsg("Loaded player: " + player);
+                    Path path = new Path(player);
+                    path.startPath(player, Integer.toString(slotIndex + 1)); // Pass the slot number
+                    path.displayWelcomeMessage(player);
                     return;
                 } else if (slotIndex == gameSlots.size()) {
                     ui.displayMsg("Returning to Main Menu...");
@@ -106,7 +108,7 @@ public class Game {
         }
     }
 
-    private void createNewGameSlot(String slotChoice) {
+    public void createNewGameSlot(String slotChoice) {
         // Create a new save slot file and add it to the list
         String newSlotPath = "data/slot" + slotChoice + ".csv";
         FileIO.saveData(new ArrayList<>(), newSlotPath, "type,name,value,stat1,stat2"); // Initialize empty save file
@@ -116,10 +118,20 @@ public class Game {
         String newInventoryPath = "data/inventory" + slotChoice + ".csv";
         FileIO.saveData(new ArrayList<>(), newInventoryPath, "type,name,value,stat1,stat2"); // Initialize empty inventory file
 
+        // Add initial player data for the new slot (can be customized)
+        String initialPlayerName = ui.promptText("What is your name, adventurer?");
+        Player player = new Player(initialPlayerName, 200, 100); // Set initial stats (e.g., 200 health, 100 mana)
+
+        // Save initial player data to the new slot file
+        player.savePlayerData(player,newSlotPath);
+
         ui.displayMsg("New game slot created: " + newSlotPath);
+        Path path = new Path(player);
+        path.displayWelcomeMessage(player);
+        path.startPath(player,slotChoice);
     }
 
-    private Player loadPlayerFromFile(String filePath) {
+    public Player loadPlayerFromFile(String filePath) {
         Player player = new Player("Adventurer", 100, 100); // Default stats
         player.loadPlayerData(filePath); // Load player data (e.g., name, stats)
 

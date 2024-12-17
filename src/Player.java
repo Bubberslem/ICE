@@ -53,13 +53,17 @@ public class Player {
         }
     }
     public void displayInventory() {
-        System.out.println("=== Weapons ===");
-        for (Weapon weapon : weapons) {
-            System.out.println(weapon);
-        }
-        System.out.println("\n=== Armor ===");
-        for (Armor armor : armors) {
-            System.out.println(armor);
+        if (inventory.isEmpty()) {
+            System.out.println("Your inventory is empty");
+        } else {
+            System.out.println("=== Weapons ===");
+            for (Weapon weapon : weapons) {
+                System.out.println(weapon);
+            }
+            System.out.println("\n=== Armor ===");
+            for (Armor armor : armors) {
+                System.out.println(armor);
+            }
         }
     }
 
@@ -111,6 +115,23 @@ public class Player {
     public void addToInventory(Loot loot){
         inventory.add(loot);
     }
+    public void attackEnemy(Enemy enemy) {
+        if (equippedWeapon != null) {
+            System.out.println(getName() + " attacks " + enemy.getName() + " with " + equippedWeapon.getName());
+            enemy.takeDamage(equippedWeapon.getDamage());
+        } else {
+            System.out.println(getName() + " attacks " + enemy.getName() + " with their fists!");
+            enemy.takeDamage(5); // Basic attack damage
+        }
+    }
+
+    public List<Weapon> getWeapons() {
+        return weapons;
+    }
+
+    public List<Armor> getArmors() {
+        return armors;
+    }
 
     public void addWeapon(Weapon weapon) {
         weapons.add(weapon);
@@ -120,6 +141,22 @@ public class Player {
         armors.add(armor);
     }
 
+    public void savePlayerData(Player player, String filePath) {
+        List<String> playerData = new ArrayList<>();
+        playerData.add(player.getName() + "," + player.getGold() + "," + player.getHealth());
+        FileIO.saveData(playerData, filePath, "name,gold,health");
+    }
+
+    public void saveInventory(Player player, String inventoryFilePath) {
+        List<String> inventoryData = new ArrayList<>();
+        for (Weapon weapon : player.getWeapons()) {
+            inventoryData.add("Weapon," + weapon.getName() + "," + weapon.getValue() + "," + weapon.getDamage() + "," + weapon.getDurability());
+        }
+        for (Armor armor : player.getArmors()) {
+            inventoryData.add("Armor," + armor.getName() + "," + armor.getValue() + "," + armor.getDefense() + "," + armor.getDurability());
+        }
+        FileIO.saveData(inventoryData, inventoryFilePath, "type,name,value,stat1,stat2");
+    }
 
     @Override
     public String toString() {
