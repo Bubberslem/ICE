@@ -4,9 +4,11 @@ public class Path {
 
     TextUI ui = new TextUI();
     private Player player;
+    private Shopkeeper shopkeeper;
 
     public Path(Player player) {
         this.player = player;
+        this.shopkeeper = new Shopkeeper();
     }
 
     public void startPath(Player player, String saveSlot) {
@@ -54,6 +56,48 @@ public class Path {
                 startPath(player, saveSlot);
         }
     }
+
+    private void shopkeeperEncounter() {
+        ui.displayMsg("You arrive at the Combine base, which is mostly destroyed. Among the wreckage, you spot a shopkeeper standing near a stall.");
+        ui.displayMsg("The shopkeeper offers a variety of items for sale, including weapons, armor, and healing supplies.");
+
+        // Display the shop inventory
+        shopkeeper.displayShopInventory();
+
+        // Let the player choose to buy an item or leave
+        boolean shopOpen = true;
+        while (shopOpen) {
+            ui.displayMsg("\nWhat would you like to do?");
+            ui.displayMsg("1. Buy an item");
+            ui.displayMsg("2. Leave the shop");
+            String choice = ui.promptText("Enter your choice: ");
+
+            if (choice.equals("1")) {
+                // Ask the player for the category of item they want to browse
+                ui.displayMsg("Which category would you like to browse?");
+                ui.displayMsg("1. Weapons");
+                ui.displayMsg("2. Armor");
+                ui.displayMsg("3. Items");
+                String categoryChoice = ui.promptText("Enter category (1, 2, or 3): ");
+
+                // Ask for the item to buy
+                ui.displayMsg("Enter the number of the item you wish to buy: ");
+                int itemChoice = Integer.parseInt(ui.promptText("Item number: "));
+
+                // Buy the item
+                shopkeeper.buyItem(player, Integer.parseInt(categoryChoice), itemChoice);
+            } else if (choice.equals("2")) {
+                // Exit the shop
+                ui.displayMsg("You leave the shop and continue your journey.");
+                shopOpen = false;
+                startPath(player, "");  // Return to the main path
+            } else {
+                ui.displayMsg("Invalid choice! Please try again.");
+            }
+        }
+    }
+
+
 
 
 
