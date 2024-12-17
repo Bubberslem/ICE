@@ -1,3 +1,5 @@
+Mads Dahl og Marcus Rasmussen
+
 Funktionelle krav:
 1. Startmenu:
 En tekstbaseret menu, der giver spilleren mulighed for at starte et nyt spil eller fortsætte et tidligere spil. Spilleren kan vælge fra en liste af gemte spil.
