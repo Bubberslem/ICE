@@ -111,4 +111,31 @@ public class FileIO {
 
         return armors;
     }
+
+    public static List<Loot> loadLoot(String filePath) {
+        List<Loot> lootItems = new ArrayList<>();
+
+        try {
+            Scanner scanner = new Scanner(new File(filePath));
+            scanner.nextLine(); // Skip the header row
+
+            while (scanner.hasNextLine()) {
+                String[] parts = scanner.nextLine().split(",");
+                if (parts.length < 3) continue; // Skip incomplete lines
+
+                String name = parts[0].trim();
+                int value = Integer.parseInt(parts[1].trim());
+                String description = parts[2].trim();
+
+                lootItems.add(new Loot(name, value, description));
+            }
+            scanner.close();
+        } catch (FileNotFoundException e) {
+            System.out.println("Loot file not found: " + filePath);
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid data format in loot file.");
+        }
+
+        return lootItems;
+    }
 }

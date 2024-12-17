@@ -8,6 +8,7 @@ public class Player {
     private List<Weapon> weapons;
     private List<Armor> armors;
     private List<Loot> inventory;
+    private List<Loot> items;
     private Weapon equippedWeapon;
     private Armor equippedArmor;
 
@@ -20,6 +21,7 @@ public class Player {
         this.inventory = new ArrayList<>();
         this.equippedWeapon = null;
         this.equippedArmor = null;
+        this.items = new ArrayList<>();
     }
 
 
@@ -53,16 +55,22 @@ public class Player {
         }
     }
     public void displayInventory() {
-        if (inventory.isEmpty()) {
-            System.out.println("Your inventory is empty");
-        } else {
-            System.out.println("=== Weapons ===");
-            for (Weapon weapon : weapons) {
-                System.out.println(weapon);
-            }
-            System.out.println("\n=== Armor ===");
-            for (Armor armor : armors) {
-                System.out.println(armor);
+        System.out.println("=== Inventory ===");
+
+        displayCategory("Weapons", weapons);
+        displayCategory("Armors", armors);
+        displayCategory("Items", items);
+
+        if (weapons.isEmpty() && armors.isEmpty() && items.isEmpty()) {
+            System.out.println("Your inventory is empty.");
+        }
+    }
+
+    private <T> void displayCategory(String title, List<T> items) {
+        if (!items.isEmpty()) {
+            System.out.println("\n=== " + title + " ===");
+            for (T item : items) {
+                System.out.println(item);
             }
         }
     }
@@ -116,6 +124,9 @@ public class Player {
 
     public void addToInventory(Loot loot){
         inventory.add(loot);
+    }
+    public void addItem(Loot loot){
+        items.add(loot);
     }
     public void attackEnemy(Enemy enemy) {
         if (equippedWeapon != null) {

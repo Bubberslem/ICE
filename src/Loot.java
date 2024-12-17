@@ -22,4 +22,8 @@ public class Loot {
     }
     public String getDescription() {return type; }
 
+    @Override
+    public String toString() {
+        return getName() + " - " + getValue() + " gold (" + getDescription() + ")";
+    }
 }

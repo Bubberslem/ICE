@@ -28,4 +28,9 @@ public class Armor {
     public int getValue() {
         return value;
     }
+    @Override
+    public String toString() {
+        return getName() + " - " + getValue() + " gold (Defense: "
+                + getDefense() + ", Durability: " + getDurability() + ")";
+    }
 }

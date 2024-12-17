@@ -80,8 +80,13 @@ public class Path {
                 ui.displayMsg("2. Armor");
                 ui.displayMsg("3. Items");
                 String categoryChoice = ui.promptText("Enter category (1, 2, or 3): ");
-
+                switch (categoryChoice) {
+                    case "1" -> shopkeeper.displayWeapons();
+                    case "2" -> shopkeeper.displayArmors();
+                    case "3" -> shopkeeper.displayItems();
+                }
                 // Ask for the item to buy
+
                 ui.displayMsg("Enter the number of the item you wish to buy: ");
                 int itemChoice = Integer.parseInt(ui.promptText("Item number: "));
 
@@ -289,6 +294,10 @@ public class Path {
 
         String roadChoice = ui.promptText("The helicopter seems to have spotted you! What do you do?\n1. Hide behind debris\n2. Run towards a building for cover\n3. Stand your ground and prepare to fight");
         handleRoadChoice(roadChoice,saveSlot);
+        }else {
+            if ("Combine base".equalsIgnoreCase(location)) {
+                shopkeeperEncounter();
+            }
         }
     }
 }
