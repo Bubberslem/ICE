@@ -1,3 +1,4 @@
+import java.util.List;
 import java.util.Scanner;
 
 public class Path {
@@ -58,39 +59,41 @@ public class Path {
 
 
 
-    private void handleRoadChoice(String roadChoice) {
+    public void handleRoadChoice(String roadChoice,String saveSlot) {
         switch (roadChoice) {
             case "1": // Hide under the pile of bodies and find armor
                 ui.displayMsg("You dive under a pile of dead rebellion soldiers. Their flesh is cold and moist.");
                 ui.displayMsg("As you press against the bodies, your hand touches something metallic. It's a piece of armor!");
-                ui.displayMsg("The helicopter fires a stream of bullets, but the armor absorbs the damage, saving your life.");
-                Armor bulletproofVest = new Armor("Bulletproof Vest", 300, 50, 10); // Defense: 50, Durability: 10
-                player.addArmor(bulletproofVest);
-                player.equipArmor(bulletproofVest);
-                ui.displayMsg("You equip the Bulletproof Vest. It will absorb damage from bullets, but its durability will decrease over time.");
-                ui.displayMsg("The helicopter loses interest and flies away. You survive this encounter.");
+
+
+                List<Armor> armors = FileIO.loadArmor("data/armors.csv"); // Defense: 50, Durability: 10
+                if (!armors.isEmpty()) {
+                    Armor bulletproofVest = armors.get(0); // Choose the first armor item
+                    player.addArmor(bulletproofVest);
+                    player.equipArmor(bulletproofVest);
+                    ui.displayMsg("You equip the " + bulletproofVest.getName() + ". It will absorb damage from bullets, but its durability will decrease over time.");
+                    ui.displayMsg("The helicopter fires a stream of bullets, but the armor absorbs the damage, saving your life.");
+                    ui.displayMsg("The helicopter loses interest and flies away. You survive this encounter.");
+                    startPath(player, saveSlot);
+                } else {
+                    deathSequence("No armor found in the pile.");
+                }
                 break;
             case "2": // Sprint for cover and die
-                ui.displayMsg("You give an incredible dash, sprinting as fast as you can.");
-                ui.displayMsg("The helicopter focuses on you and unleashes a precise stream of bullets.");
-                ui.displayMsg("You are hit multiple times and collapse to the ground. You have died.");
-                player.setHealth(0); // Trigger death sequence
+                deathSequence("You give an incredible dash, sprinting as fast as you can. The helicopter focuses on you and unleashes a precise stream of bullets. You are hit multiple times and collapse to the ground.");
                 break;
             case "3": // Lay flat and die
-                ui.displayMsg("You jump to the ground, hoping that lying flat will save you.");
-                ui.displayMsg("The helicopter hovers above you, its spotlight fixed. A hail of bullets rains down.");
-                ui.displayMsg("You are riddled with bullets and die instantly.");
-                player.setHealth(0); // Trigger death sequence
+                deathSequence("You jump to the ground, hoping that lying flat will save you. The helicopter hovers above you, its spotlight fixed. A hail of bullets rains down. You are riddled with bullets and die instantly.");
                 break;
             default:
                 ui.displayMsg("Invalid choice! Try again.");
                 String newRoadChoice = ui.promptText("Choose an action: 1. Hide in the pile of bodies, 2. Sprint, 3. Lay flat");
-                handleRoadChoice(newRoadChoice);
+                handleRoadChoice(newRoadChoice,saveSlot);
         }
     }
 
 
-    private void encounterSecurityGuard() {
+    public void encounterSecurityGuard() {
         System.out.println("The security guard has the following loot:");
         System.out.println("1. A tactical flashlight (Good for dark areas or exposing shadowy beings).");
         System.out.println("2. A medkit (Restores a moderate amount of health upon use).");
@@ -100,7 +103,7 @@ public class Path {
         handleLootChoice(lootChoice);
     }
 
-    private void handleLootChoice(String lootChoice) {
+    public void handleLootChoice(String lootChoice) {
         switch (lootChoice) {
             case "1":
                 System.out.println("You take the tactical flashlight. It might help you in dark places.");
@@ -122,8 +125,98 @@ public class Path {
                 handleLootChoice(newLootChoice);
         }
     }
+    public void deathSequence(String message) {
+        ui.displayMsg(message);
+        player.setHealth(0); // Trigger death sequence
+        ui.displayMsg("You have died. Game over.");
 
-    private void triggerEvent(String location, String saveSlot) {
+        // Optionally, you can prompt the player to restart or load a previous save.
+        String restartChoice = ui.promptText("Would you like to restart or load a previous save? (1: Restart, 2: Load Save)");
+        if ("1".equals(restartChoice)) {
+            startPath(player, "data/gameSlots.csv"); // Restart the game
+        } else if ("2".equals(restartChoice)) {
+            loadSaveGame("data/gameSlots.csv"); // Load the saved game if applicable
+        } else {
+            ui.displayMsg("Invalid choice. Exiting...");
+        }
+    }
+    private void loadSaveGame(String saveSlot) {
+        // Load the saved player data
+        List<String> savedData = FileIO.readPlayerData(saveSlot);
+
+        if (savedData.isEmpty()) {
+            ui.displayMsg("No saved game found in " + saveSlot);
+            return;
+        }
+
+        // Extract player data from the saved data (e.g., health, inventory, equipped items)
+        String playerName = savedData.get(0); // Assume first line contains player name
+        int health = Integer.parseInt(savedData.get(1)); // Assume second line contains player health
+        String inventoryData = savedData.get(2); // Inventory data, a string or serialized data (could be more complex)
+
+        // Restore player attributes
+        player.setName(playerName);
+        player.setHealth(health);
+
+        // Handle inventory (example: assume inventory is a simple comma-separated list of item names)
+        String[] inventoryItems = inventoryData.split(",");
+        for (String itemName : inventoryItems) {
+            // Example: Load specific items from files (Weapons, Armors, etc.)
+            if (itemName.equals("Medkit")) {
+                player.addToInventory(new Loot("Medkit", 50, "Healing"));
+            } else if (itemName.equals("Tactical Flashlight")) {
+                player.addToInventory(new Loot("Tactical Flashlight", 20, "Utility"));
+            }
+            // Add more items as needed
+        }
+
+        // Optionally, load equipped items like weapons or armor
+        // For simplicity, let's assume we stored the name of the equipped weapon/armor
+        String equippedWeapon = savedData.get(3); // Assume third line contains the equipped weapon name
+        Weapon weapon = loadWeaponByName(equippedWeapon); // Method to load a weapon by name
+        if (weapon != null) {
+            player.equipWeapon(weapon);
+        }
+
+        String equippedArmor = savedData.get(4); // Assume fourth line contains the equipped armor name
+        Armor armor = loadArmorByName(equippedArmor); // Method to load armor by name
+        if (armor != null) {
+            player.equipArmor(armor);
+        }
+
+        // Display the restored player state
+        ui.displayMsg("Game successfully loaded!");
+        ui.displayMsg("Welcome back, " + player.getName() + ". Your health: " + player.getHealth());
+        ui.displayMsg("Inventory: " + inventoryData);
+        ui.displayMsg("Equipped Weapon: " + (weapon != null ? weapon.getName() : "None"));
+        ui.displayMsg("Equipped Armor: " + (armor != null ? armor.getName() : "None"));
+
+        // Optionally, restart the game from the previous location or state
+        startPath(player, saveSlot); // Resume the game
+    }
+
+    private Weapon loadWeaponByName(String name) {
+        List<Weapon> weapons = FileIO.loadWeapons("data/weapons.csv");
+        for (Weapon w : weapons) {
+            if (w.getName().equals(name)) {
+                return w;
+            }
+        }
+        return null; // Return null if no weapon with the given name is found
+    }
+
+    // Example method to load armor by name (you can implement this based on your own structure)
+    private Armor loadArmorByName(String name) {
+        List<Armor> armors = FileIO.loadArmor("data/armors.csv");
+        for (Armor a : armors) {
+            if (a.getName().equals(name)) {
+                return a;
+            }
+        }
+        return null; // Return null if no armor with the given name is found
+    }
+
+    public void triggerEvent(String location, String saveSlot) {
         if ("Parking lot".equals(location)) {
             ui.displayMsg("An enemy appears in the parking lot!");
             Enemy enemy = new Enemy("Security Guard", false, 15, 50);
@@ -140,9 +233,10 @@ public class Path {
                 }
             }
             if (player.getHealth() <= 0) {
-                ui.displayMsg("You have been killed by " + enemy.getName());
+                deathSequence("You have been killed by " + enemy.getName());
             } else {
                 ui.displayMsg("Event in " + location + " completed.");
+                startPath(player, saveSlot);
             }
 
         } else if ("Road".equals(location)) {
@@ -150,8 +244,8 @@ public class Path {
         ui.displayMsg("In the distance, you hear the sound of a Combine helicopter. Its spotlight sweeps the area, searching for movement.");
 
         String roadChoice = ui.promptText("The helicopter seems to have spotted you! What do you do?\n1. Hide behind debris\n2. Run towards a building for cover\n3. Stand your ground and prepare to fight");
-        handleRoadChoice(roadChoice);
+        handleRoadChoice(roadChoice,saveSlot);
+        }
     }
 }
-    }
 

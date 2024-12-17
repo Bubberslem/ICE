@@ -91,13 +91,10 @@ public class Game {
                 if (slotIndex >= 0 && slotIndex < gameSlots.size()) {
                     String filePath = gameSlots.get(slotIndex);
                     Player player = loadPlayerFromFile(filePath);
-                    ui.displayMsg("Loaded player: " + player);
+                    ui.displayMsg("Loaded player: " + player.getName());
                     Path path = new Path(player);
                     path.startPath(player, Integer.toString(slotIndex + 1)); // Pass the slot number
                     path.displayWelcomeMessage(player);
-                    return;
-                } else if (slotIndex == gameSlots.size()) {
-                    ui.displayMsg("Returning to Main Menu...");
                     return;
                 } else {
                     ui.displayMsg("Invalid Choice. Select an available option");

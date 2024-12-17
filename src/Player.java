@@ -160,15 +160,24 @@ public class Player {
         FileIO.saveData(playerData, filePath, "name,gold,health");
     }
 
-    public void saveInventory(Player player, String inventoryFilePath) {
+    public void saveInventoryToFile(String filePath) {
         List<String> inventoryData = new ArrayList<>();
-        for (Weapon weapon : player.getWeapons()) {
-            inventoryData.add("Weapon," + weapon.getName() + "," + weapon.getValue() + "," + weapon.getDamage() + "," + weapon.getDurability());
+
+        // Add each item’s name or a unique identifier to the list
+        for (Loot loot : inventory) {
+            inventoryData.add(loot.getName());
         }
-        for (Armor armor : player.getArmors()) {
-            inventoryData.add("Armor," + armor.getName() + "," + armor.getValue() + "," + armor.getDefense() + "," + armor.getDurability());
+
+        for (Weapon weapon : weapons) {
+            inventoryData.add(weapon.getName());
         }
-        FileIO.saveData(inventoryData, inventoryFilePath, "type,name,value,stat1,stat2");
+
+        // Save the list of items to the inventory file
+        FileIO.saveData(inventoryData, filePath, "itemName");
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     @Override
@@ -179,4 +188,6 @@ public class Player {
                 ", health=" + health +
                 '}';
     }
+
+
 }
