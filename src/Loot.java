@@ -1,3 +1,5 @@
+import jdk.jfr.Description;
+
 public class Loot {
     private String name;
     private int value;
@@ -18,4 +20,6 @@ public class Loot {
     public String getType() {
         return type;
     }
+    public String getDescription() {return type; }
+
 }

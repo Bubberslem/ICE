@@ -9,7 +9,7 @@ public class Path {
         this.player = player;
     }
 
-    public void startPath(Player player,String saveSlot) {
+    public void startPath(Player player, String saveSlot) {
 
         ui.displayMsg("=== Your Adventure Begins! ===");
         ui.displayMsg("You are in a destroyed city filled with rubble, fire, and the smell of concrete. A billboard lies before you, stating: 'Welcome to City 17.'");
@@ -25,7 +25,7 @@ public class Path {
     public void displayWelcomeMessage(Player player) {
         ui.displayMsg("Welcome to City 17");
         ui.displayMsg("You're a rebellious fighter known throughout planet Earth. However, humanity failed, and you lost the war for the world!");
-        ui.displayMsg("Your name is "+player.getName()+" Freeman, known for your wisdom and athletic abilities. You're equipped with a standard Glock 18 and a crowbar.");
+        ui.displayMsg("Your name is " + player.getName() + " Freeman, known for your wisdom and athletic abilities. You're equipped with a standard Glock 18 and a crowbar.");
         ui.displayMsg("Follow your heart and save the world from the evil Combine slavers.");
         System.out.println();
     }
@@ -47,13 +47,48 @@ public class Path {
                 break;
             case "4":
                 player.displayInventory();
-                startPath(player,saveSlot);
+                startPath(player, saveSlot);
                 break;
             default:
                 System.out.println("Invalid choice! Try again.");
-                startPath(player,saveSlot);
+                startPath(player, saveSlot);
         }
     }
+
+
+
+
+    private void handleRoadChoice(String roadChoice) {
+        switch (roadChoice) {
+            case "1": // Hide under the pile of bodies and find armor
+                ui.displayMsg("You dive under a pile of dead rebellion soldiers. Their flesh is cold and moist.");
+                ui.displayMsg("As you press against the bodies, your hand touches something metallic. It's a piece of armor!");
+                ui.displayMsg("The helicopter fires a stream of bullets, but the armor absorbs the damage, saving your life.");
+                Armor bulletproofVest = new Armor("Bulletproof Vest", 300, 50, 10); // Defense: 50, Durability: 10
+                player.addArmor(bulletproofVest);
+                player.equipArmor(bulletproofVest);
+                ui.displayMsg("You equip the Bulletproof Vest. It will absorb damage from bullets, but its durability will decrease over time.");
+                ui.displayMsg("The helicopter loses interest and flies away. You survive this encounter.");
+                break;
+            case "2": // Sprint for cover and die
+                ui.displayMsg("You give an incredible dash, sprinting as fast as you can.");
+                ui.displayMsg("The helicopter focuses on you and unleashes a precise stream of bullets.");
+                ui.displayMsg("You are hit multiple times and collapse to the ground. You have died.");
+                player.setHealth(0); // Trigger death sequence
+                break;
+            case "3": // Lay flat and die
+                ui.displayMsg("You jump to the ground, hoping that lying flat will save you.");
+                ui.displayMsg("The helicopter hovers above you, its spotlight fixed. A hail of bullets rains down.");
+                ui.displayMsg("You are riddled with bullets and die instantly.");
+                player.setHealth(0); // Trigger death sequence
+                break;
+            default:
+                ui.displayMsg("Invalid choice! Try again.");
+                String newRoadChoice = ui.promptText("Choose an action: 1. Hide in the pile of bodies, 2. Sprint, 3. Lay flat");
+                handleRoadChoice(newRoadChoice);
+        }
+    }
+
 
     private void encounterSecurityGuard() {
         System.out.println("The security guard has the following loot:");
@@ -109,7 +144,14 @@ public class Path {
             } else {
                 ui.displayMsg("Event in " + location + " completed.");
             }
-            // Handle other locations similarly
-        }
+
+        } else if ("Road".equals(location)) {
+        ui.displayMsg("You continue down the destroyed road. The fog grows denser, obscuring your surroundings.");
+        ui.displayMsg("In the distance, you hear the sound of a Combine helicopter. Its spotlight sweeps the area, searching for movement.");
+
+        String roadChoice = ui.promptText("The helicopter seems to have spotted you! What do you do?\n1. Hide behind debris\n2. Run towards a building for cover\n3. Stand your ground and prepare to fight");
+        handleRoadChoice(roadChoice);
     }
 }
+    }
+

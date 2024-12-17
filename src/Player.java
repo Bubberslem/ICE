@@ -84,7 +84,9 @@ public class Player {
             System.out.println("You don't have this armor in your inventory.");
         }
     }
-
+    public void setGold(int gold) {
+        this.gold = gold;
+    }
 
     public String getName() {
         return name;
@@ -140,6 +142,17 @@ public class Player {
     public void addArmor(Armor armor) {
         armors.add(armor);
     }
+    public void setHealth(int health) {
+        if (health < 0) {
+            this.health = 0; // Health can't be negative
+        } else if (health > 100) { // Assuming 100 is the maximum health
+            this.health = 100;
+        } else {
+            this.health = health;
+        }
+        System.out.println("Health is now: " + this.health);
+    }
+
 
     public void savePlayerData(Player player, String filePath) {
         List<String> playerData = new ArrayList<>();
